@@ -4,49 +4,58 @@ import{
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
 } from 'react-native'
+import AppStateListener from 'react-native-appstate-listener'
 
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import SoundPlayer from 'react-native-sound-player'
+import Sound from 'react-native-sound'
+
+Sound.setCategory('playback',false)
 
 export default class Home extends Component{
 
-  playSound = () => {
-    try
-    {
-      SoundPlayer.playSoundFile('soundone','mp3');
-    }
-    catch (e)
-    {
-      console.log(e)
-    }
-  }
 
-  playAgain = () => {
-    SoundPlayer.onFinishedPlaying((success: boolean) =>{
-      this.playSound();
+  loadSound = () => {
+     this.sound = new Sound('soundone.mp3', Sound.MAIN_BUNDLE,(error)=>{
+      if(error){
+        console.warn("no existing sounds");
+        return;
+      }
+      this.sound.setNumberOfLoops(-1);
+      this.playSound(this.sound)
     })
   }
 
-  stopPlaying = () => {
-    SoundPlayer.stop();
+  playSound = () => {
+    this.sound.play( (success) =>{
+      if(!success){
+        this.sound.reset()
+      }
+    })
   }
 
-  componentDidMount() {
-    this.playSound();
-    this.playAgain();
+  stopSound = () => {
+    this.sound.stop()
+    this.sound.release()
   }
 
-  componentWillUnmount(){
-    //this.stopPlaying();
+  handleActive = () => {
+    this.loadSound();
   }
+
+  handleBackground = () => {
+    this.stopSound();
+  }
+
 
   render(){
     const {navigate} = this.props.navigation;
     return(
       <View style={styles.container}>
+        <AppStateListener onActive={this.handleActive}
+                          onBackground={this.handleBackground}/>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>
             <Text style={{color:'#931C15'}}>G</Text>

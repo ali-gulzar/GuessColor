@@ -63,7 +63,7 @@ export default class Instructions extends Component {
           <Text style={styles.instructions}>
             With increasing score,
            the allocated time will decrease and the challenge would become more difficult.
-           Good Luck and have fun. Alse share it with your friends.
+           Good Luck and have fun. Also share it with your friends.
           </Text>
         </View>
 
